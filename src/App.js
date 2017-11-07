@@ -9,9 +9,35 @@ class App extends Component {
     selectedHero: {}
   };
 
+  handleSubmit = event => {
+    event.preventDefault();
+    const hero = this.state.selectedHero;
+    const heroIndex = this.state.heroes.map(o => o.id).indexOf(hero.id);
+    this.setState({
+      heroes: [
+        ...this.state.heroes.slice(0, heroIndex),
+        {
+          ...hero,
+          superhero: hero.superhero
+        },
+        ...this.state.heroes.slice(heroIndex + 1, this.state.heroes.length)
+      ]
+    });
+  };
+
   handleSelectedHero = hero => {
     this.setState({
       selectedHero: hero
+    });
+  };
+
+  HanedleNameChange = event => {
+    console.log(event.target.value);
+    this.setState({
+      selectedHero: {
+        ...this.state.selectedHero,
+        superhero: event.target.value
+      }
     });
   };
 
@@ -32,9 +58,13 @@ class App extends Component {
             <label>ID:</label>
             {this.state.selectedHero.id}
           </div>
-          <form>
+          <form onSubmit={this.handleSubmit}>
             <label>Hero Name:</label>
-            <input type="text" value={this.state.selectedHero.superhero} />
+            <input
+              type="text"
+              value={this.state.selectedHero.superhero}
+              onChange={event => this.HanedleNameChange(event)}
+            />
             <input className="button" type="submit" value="submit" />
           </form>
         </div>
