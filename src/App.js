@@ -1,19 +1,41 @@
 import React, { Component } from "react";
 import "./App.css";
-import SuperHeroes from "./superHeroes";
+import SuperHeroes from "./superheroes";
+
+import { getHeroes } from "./superheroes.service";
 
 class App extends Component {
   state = {
-    title: "Super heroes",
-    heroes: SuperHeroes.HEROES,
-    selectedHero: {}
+    title: "Super Heroes",
+    heroes: [],
+    selectedHero: {
+      id: undefined,
+      superhero: ""
+    }
   };
 
+  //life kyle hooks. do stuff on initialize
+  componentWillMount() {
+    getHeroes()
+      .then(res => res.json())
+      .then(payload => {
+        this.setState({
+          heroes: payload.heroes
+        });
+      })
+      .catch(err => console.log(err));
+  }
+
+  //update our super in the array, in place
   handleSubmit = event => {
     event.preventDefault();
     const hero = this.state.selectedHero;
     const heroIndex = this.state.heroes.map(o => o.id).indexOf(hero.id);
     this.setState({
+      selectedHero: {
+        id: undefined,
+        superhero: ""
+      },
       heroes: [
         ...this.state.heroes.slice(0, heroIndex),
         {
@@ -26,13 +48,13 @@ class App extends Component {
   };
 
   handleSelectedHero = hero => {
+    // this.state.selectedHero = hero;
     this.setState({
       selectedHero: hero
     });
   };
 
-  HanedleNameChange = event => {
-    console.log(event.target.value);
+  handleNameChange = event => {
     this.setState({
       selectedHero: {
         ...this.state.selectedHero,
@@ -42,7 +64,7 @@ class App extends Component {
   };
 
   render() {
-    const HeroesList = this.state.heroes.map(hero => {
+    const heroesList = this.state.heroes.map(hero => {
       return (
         <li key={hero.id} onClick={() => this.handleSelectedHero(hero)}>
           <span className="badge">{hero.id}:</span> {hero.superhero}
@@ -52,21 +74,43 @@ class App extends Component {
     return (
       <div className="App">
         <h1>{this.state.title}</h1>
-        <ul className="heroes">{HeroesList}</ul>
-        <div>
-          <div>
-            <label>ID:</label>
-            {this.state.selectedHero.id}
+        <div className="container">
+          <div className="row">
+            <div className="col-md-6 col-sm-12">
+              <ul className="heroes">{heroesList}</ul>
+            </div>
+            {this.state.selectedHero.id && (
+              <div className="col-md-6 col-sm-12">
+                <h2 style={{ textAlign: "center" }}>
+                  {this.state.selectedHero.superhero}
+                </h2>
+                <form
+                  className="form-horizontal"
+                  style={{ width: "60%", padding: "25px" }}
+                  onSubmit={this.handleSubmit}
+                >
+                  <div className="form-group">
+                    <label className="control-label">ID: </label>
+                    {this.state.selectedHero.id}
+                  </div>
+                  <div className="form-group">
+                    <label className="control-label">Hero Name: </label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      value={this.state.selectedHero.superhero}
+                      onChange={event => this.handleNameChange(event)}
+                    />
+                  </div>
+                  <input
+                    className="button btn btn-info"
+                    type="submit"
+                    value="submit"
+                  />
+                </form>
+              </div>
+            )}
           </div>
-          <form onSubmit={this.handleSubmit}>
-            <label>Hero Name:</label>
-            <input
-              type="text"
-              value={this.state.selectedHero.superhero}
-              onChange={event => this.HanedleNameChange(event)}
-            />
-            <input className="button" type="submit" value="submit" />
-          </form>
         </div>
       </div>
     );
