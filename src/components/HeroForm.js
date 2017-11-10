@@ -6,9 +6,9 @@ class HeroForm extends Component {
     hero: undefined
   };
 
-  //on load when component is init (when shit loads)
-  ComponentWillMount() {
-    //we've got the hero id -> is the hero an obj{} (id what this means)
+  //on load when component is init
+  componentWillMount() {
+    //we've got the hero id -> is the hero object{}
     const hero = this.props.getHeroById(this.props.match.params.heroId);
     this.setState({
       hero: hero
@@ -20,6 +20,7 @@ class HeroForm extends Component {
     this.props.handleSubmit(e, hero);
     this.props.history.goBack();
   };
+
   handleNameChange = event => {
     this.setState({
       hero: {
